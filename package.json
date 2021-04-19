@@ -1,0 +1,22 @@
+{
+  "name": "zuri-training",
+  "version": "1.0.0",
+  "description": "This is a task's solution",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaycee-dev/zuri-training.git"
+  },
+  "author": "Kelechi Uba",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kaycee-dev/zuri-training/issues"
+  },
+  "homepage": "https://github.com/Kaycee-dev/zuri-training#readme",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}

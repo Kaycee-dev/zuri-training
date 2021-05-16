@@ -57,50 +57,50 @@ const friendsArray = [{
 ];
 
 // Create Data
-friendsArray.forEach(element => {
-    Friend.create(element, (err,friend) => {
-        if (err) {
-            console.log({err})
-        } else {
-            console.log({message:"Friend created successfully!",data:{friend}})
-        };
-    })
-});
+// friendsArray.forEach(element => {
+//     Friend.create(element, (err,friend) => {
+//         if (err) {
+//             console.log({err})
+//         } else {
+//             console.log({message:"Friend created successfully!",data:{friend}})
+//         };
+//     })
+// });
 
-// Get the data created
-Friend.find({name:"Glow"},(err,friends) => {
-    if (err) console.log({message:"Find operation failed!",data:{err}})
-    else {
-        console.log({message:"Find operation successful!",data:`${JSON.stringify(friends)}`}
-        )
-    }
+// // Get the data created
+// Friend.find({name:"Glow"},(err,friends) => {
+//     if (err) console.log({message:"Find operation failed!",data:{err}})
+//     else {
+//         console.log({message:"Find operation successful!",data:`${JSON.stringify(friends)}`}
+//         )
+//     }
 
-})
+// })
 
-// Update the data created
-Friend
-    .findOneAndUpdate({name:"Michael"}, {name:'Xyluz',country:"Ghana",email:"xyluz001@yahoo.com"},{new: true},
-            (err,friend) => {
-            // console.log(`Here is friend ID ${clientID}`)
-            if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
-                if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
-                else {
-                    friend.save((err,done) => {
-                        if (err) console.log(err)
-                        else console.log({message:"Friend updated successfully!",data:{done}})
-                    })
-                }
-        }
+// // Update the data created
+// Friend
+//     .findOneAndUpdate({name:"Michael"}, {name:'Xyluz',country:"Ghana",email:"xyluz001@yahoo.com"},{new: true},
+//             (err,friend) => {
+//             // console.log(`Here is friend ID ${clientID}`)
+//             if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
+//                 if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
+//                 else {
+//                     friend.save((err,done) => {
+//                         if (err) console.log(err)
+//                         else console.log({message:"Friend updated successfully!",data:{done}})
+//                     })
+//                 }
+//         }
 
-)
+// )
 
-// Delete the data created
-Friend.deleteOne({name:'Mike'},(err,friend) => {
-    if (err) console.log({message:'An error occured!',data:{err}})
-    if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
-    else console.log({message:'Friend deleted successfully!',data:{friend}})
-}
-)
+// // Delete the data created
+// Friend.deleteOne({name:'Mike'},(err,friend) => {
+//     if (err) console.log({message:'An error occured!',data:{err}})
+//     if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
+//     else console.log({message:'Friend deleted successfully!',data:{friend}})
+// }
+// )
 
 // Create four routes;
 

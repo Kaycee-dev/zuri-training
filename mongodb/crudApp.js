@@ -1,14 +1,19 @@
 const app = require('express')()
 const mongoose = require('mongoose');
-const connectionString = 'mongodb://localhost:27017/mynewdb';
+// const connectionString = 'mongodb://localhost:27017/mynewdb';
+// const connectionString = 'mongodb+srv://dev-kelechi:svr6sXhd45KdJPz@zuritraining-nodejs.ccyw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+
+const uri = process.env.MONGODB_URI || 'mongodb+srv://dev-kelechi:svr6sXhd45KdJPz@zuritraining-nodejs.ccyw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 const {Schema} = mongoose;
 
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
+// app.use(express.static("public"));
 
+// const client = new MongoClient(uri, { useUnifiedTopology: true });
 
-mongoose.connect(connectionString, {
+mongoose.connect(uri, {
     useUnifiedTopology:true,
     useNewUrlParser:true,
     useFindAndModify:false

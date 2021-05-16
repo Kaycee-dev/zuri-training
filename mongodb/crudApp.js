@@ -169,4 +169,5 @@ app.delete('/', (req,res) => {
     })
 })
 
-app.listen(5000, () => console.log('app connected'))
+const port = process.env.PORT || 5000
+app.listen(port, () => console.log(`App connected and running on port ${port}`))

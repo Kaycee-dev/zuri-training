@@ -1,9 +1,10 @@
 const app = require('express')()
 const mongoose = require('mongoose');
 // const connectionString = 'mongodb://localhost:27017/mynewdb';
-// const connectionString = 'mongodb+srv://dev-kelechi:svr6sXhd45KdJPz@zuritraining-nodejs.ccyw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+// const connectionString = 'mongodb+srv://dev-kelechi:**************@zuritraining-nodejs.ccyw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://dev-kelechi:svr6sXhd45KdJPz@zuritraining-nodejs.ccyw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+// const uri = process.env.MONGODB_URI || 'mongodb+srv://dev-kelechi:**************@zuritraining-nodejs.ccyw2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+const uri = process.env.MONGODB_URI;
 const {Schema} = mongoose;
 
 
@@ -181,7 +182,7 @@ app.delete('/', (req,res) => {
             return res.status(500).json({message:'Friend to delete does not exist!',data:{friend}})}
         else  {
             console.log({message:'Friend deleted successfully!',data:`${JSON.stringify(friend)}`})
-            return res.status(204).json({message:'Friend deleted successfully!',data:{friend}})
+            return res.status(200).json({message:'Friend deleted successfully!',data:{friend}})
         };
     })
 })

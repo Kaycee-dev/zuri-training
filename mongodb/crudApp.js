@@ -105,7 +105,7 @@ Friend.deleteOne({name:'Mike'},(err,friend) => {
 // Create four routes;
 
 // fetch all friends in the database
-app.get('/friends', (req,res) => {
+app.get('/', (req,res) => {
     Friend.find(req.body, (err,friends) => {
         console.log(`GET request input:\n${JSON.stringify(req.body)}`);
         if (err) {
@@ -118,7 +118,7 @@ app.get('/friends', (req,res) => {
 })
 
 // add a new friend to the database
-app.post('/friends', (req,res) => {
+app.post('/', (req,res) => {
     console.log(`POST request input:\n${JSON.stringify(req.body)}`);
     Friend.create(req.body, (err,friend) => {
         if (err) {
@@ -131,7 +131,7 @@ app.post('/friends', (req,res) => {
 })
 
 // update an existing friend
-app.put('/friends', (req,res) => {
+app.put('/', (req,res) => {
     console.log(`PUT request input:\n${JSON.stringify(req.body)}`);
     Friend
         .findOneAndUpdate(req.body.find,
@@ -155,7 +155,7 @@ app.put('/friends', (req,res) => {
 })
 
 // delete an existing friend
-app.delete('/friends', (req,res) => {
+app.delete('/', (req,res) => {
     console.log(`DELETE request input:\n${JSON.stringify(req.body)}`);
     Friend.deleteOne(req.body,(err,friend) => {
         if (err) return res.status(500).json({message:'An error occured!',data:{err}})

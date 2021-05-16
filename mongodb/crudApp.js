@@ -57,50 +57,55 @@ const friendsArray = [{
 ];
 
 // Create Data
-// friendsArray.forEach(element => {
-//     Friend.create(element, (err,friend) => {
-//         if (err) {
-//             console.log({err})
-//         } else {
-//             console.log({message:"Friend created successfully!",data:{friend}})
-//         };
-//     })
-// });
+var uniqueEmails = [];
+friendsArray.forEach(element => {
 
-// // Get the data created
-// Friend.find({name:"Glow"},(err,friends) => {
-//     if (err) console.log({message:"Find operation failed!",data:{err}})
-//     else {
-//         console.log({message:"Find operation successful!",data:`${JSON.stringify(friends)}`}
-//         )
-//     }
+    if (!uniqueEmails.includes(element.email)) {
+        uniqueEmails.push(element.email);
+        Friend.create(element, (err,friend) => {
+            if (err) {
+                console.log({err})
+            } else {
+                console.log({message:"Friend created successfully!",data:{friend}})
+            };
+        })
+    }
+});
 
-// })
+// Get the data created
+Friend.find({name:"Glow"},(err,friends) => {
+    if (err) console.log({message:"Find operation failed!",data:{err}})
+    else {
+        console.log({message:"Find operation successful!",data:`${JSON.stringify(friends)}`}
+        )
+    }
 
-// // Update the data created
-// Friend
-//     .findOneAndUpdate({name:"Michael"}, {name:'Xyluz',country:"Ghana",email:"xyluz001@yahoo.com"},{new: true},
-//             (err,friend) => {
-//             // console.log(`Here is friend ID ${clientID}`)
-//             if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
-//                 if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
-//                 else {
-//                     friend.save((err,done) => {
-//                         if (err) console.log(err)
-//                         else console.log({message:"Friend updated successfully!",data:{done}})
-//                     })
-//                 }
-//         }
+})
 
-// )
+// Update the data created
+Friend
+    .findOneAndUpdate({name:"Michael"}, {name:'Xyluz',country:"Ghana",email:"xyluz001@yahoo.com"},{new: true},
+            (err,friend) => {
+            // console.log(`Here is friend ID ${clientID}`)
+            if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
+                if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
+                else {
+                    friend.save((err,done) => {
+                        if (err) console.log(err)
+                        else console.log({message:"Friend updated successfully!",data:{done}})
+                    })
+                }
+        }
 
-// // Delete the data created
-// Friend.deleteOne({name:'Mike'},(err,friend) => {
-//     if (err) console.log({message:'An error occured!',data:{err}})
-//     if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
-//     else console.log({message:'Friend deleted successfully!',data:{friend}})
-// }
-// )
+)
+
+// Delete the data created
+Friend.deleteOne({name:'Mike'},(err,friend) => {
+    if (err) console.log({message:'An error occured!',data:{err}})
+    if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
+    else console.log({message:'Friend deleted successfully!',data:{friend}})
+}
+)
 
 // Create four routes;
 
@@ -120,14 +125,21 @@ app.get('/', (req,res) => {
 // add a new friend to the database
 app.post('/', (req,res) => {
     console.log(`POST request input:\n${JSON.stringify(req.body)}`);
-    Friend.create(req.body, (err,friend) => {
-        if (err) {
-            console.log({message:"An error occured on post attempt!",data:{err}});
-            return res.status(500).json({message:'An error occured!',data:{err}})
-        }
-        else console.log({message:"Friend added successfully!",data:{friend}});
-        return res.status(200).json({message:"Friend added successfully!",data:{friend}});
-    })
+    if (!uniqueEmails.includes(req.body.email)) {
+        uniqueEmails.push(req.body.email);
+        Friend.create(req.body, (err,friend) => {
+            if (err) {
+                console.log({message:"An error occured on post attempt!",data:{err}});
+                return res.status(500).json({message:'An error occured!',data:{err}})
+            }
+            else console.log({message:"Friend added successfully!",data:{friend}});
+            return res.status(200).json({message:"Friend added successfully!",data:{friend}});
+        })
+    }
+    else {
+        console.log({message:"Email address already in use!",data:`${JSON.stringify(req.body)}`});
+        return res.status(400).json({message:"Email address already in use!",data:req.body});
+    }
 })
 
 // update an existing friend
@@ -164,7 +176,7 @@ app.delete('/', (req,res) => {
             return res.status(500).json({message:'Friend to delete does not exist!',data:{friend}})}
         else  {
             console.log({message:'Friend deleted successfully!',data:`${JSON.stringify(friend)}`})
-            return res.status(200).json({message:'Friend deleted successfully!',data:{friend}})
+            return res.status(204).json({message:'Friend deleted successfully!',data:{friend}})
         };
     })
 })

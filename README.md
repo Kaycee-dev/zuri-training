@@ -2,9 +2,20 @@
 Repository for solutions to tasks from zuri 2021 training, Back-end track: Node-js
 
 ###  SIMPLE DOCUMENTATION OF ROUTES FOR CRUD APP WITH DATABASE ###
+
+Heroku hosted link https://crud-application-with-database.herokuapp.com/
+
 # In postman, ensure your Headers has the following setting: Content-Type : application/json
 # Body should be set as raw and type as JSON from the dropdown to the right
-# Set request url to http://localhost:5000/friends
+# Set request url to https://crud-application-with-database.herokuapp.com/
+
+**API Endpoints**
+ | HTTP Verbs | Endpoints | Action |
+ | :--- | :---: | :--- |
+ | GET | ('/') | Retrieve details of user(s)  |
+ | POST | ('/') | Create a new user with **unique email** |
+ | PUT | ('/') | Edit details of a user |
+ | DELETE | ('/') | Delete a user |
 
 # Use GET to display current entries of friends in the db
 # Empty object {} as input equates to find all

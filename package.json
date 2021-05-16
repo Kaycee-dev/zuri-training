@@ -2,8 +2,9 @@
   "name": "zuri-training",
   "version": "1.0.0",
   "description": "This is a task's solution",
-  "main": "index.js",
+  "main": "./mongodb/crudApp.js",
   "scripts": {
+    "start": "node ./mongodb/crudApp.js",
     "test": "test"
   },
   "repository": {
@@ -17,6 +18,13 @@
   },
   "homepage": "https://github.com/Kaycee-dev/zuri-training#readme",
   "dependencies": {
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.6",
+    "mongoose": "^5.12.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }

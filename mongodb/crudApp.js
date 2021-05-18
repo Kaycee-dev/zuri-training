@@ -10,9 +10,7 @@ const {Schema} = mongoose;
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
-// app.use(express.static("public"));
 
-// const client = new MongoClient(uri, { useUnifiedTopology: true });
 
 mongoose.connect(uri, {
     useUnifiedTopology:true,
@@ -40,9 +38,9 @@ const payloadSchema = new Schema({
 const Friend = mongoose.model('Friend', friendSchema);
 const Payload = mongoose.model('Payload', payloadSchema);
 
-const friendsArray = [{
-    "name": "Kennedy",
-    "email": "ken@gmail.com",
+var friendsArray = [{
+    "name": "Ramos",
+    "email": "ramosgusto@gmail.com",
     "country": "Spain"
 },
 {
@@ -51,71 +49,90 @@ const friendsArray = [{
     "country": "Nigeria"
 },
 {
-    "name": "Michael",
-    "email": "michael01@gmail.com",
+    "name": "Takwe",
+    "email": "t4takwel01@gmail.com",
     "country": "Tanzania"
 },
 {
-    "name": "Mike",
-    "email": "mike@gmail.com",
-    "country": "Ghana"
+    "name": "Apiah",
+    "email": "apiah@gmail.com",
+    "country": "Rwanda"
 }
 ];
 
-// Create Data
-var uniqueEmails = [];
-friendsArray.forEach(element => {
-
-    if (!uniqueEmails.includes(element.email)) {
-        uniqueEmails.push(element.email);
-        Friend.create(element, (err,friend) => {
-            if (err) {
-                console.log({err})
-            } else {
-                console.log({message:"Friend created successfully!",data:{friend}})
-            };
-        })
-    }
-});
-
-// Get the data created
-Friend.find({name:"Glow"},(err,friends) => {
+// Get existing data if any
+var getEmails = Friend.find({},async (err,friends) => {
     if (err) console.log({message:"Find operation failed!",data:{err}})
-    else {
-        console.log({message:"Find operation successful!",data:`${JSON.stringify(friends)}`}
-        )
-    }
+    else  return await friends;
 
-})
+}).lean().exec();
 
-// Update the data created
-Friend
-    .findOneAndUpdate({name:"Michael"}, {name:'Xyluz',country:"Ghana",email:"xyluz001@yahoo.com"},{new: true},
-            (err,friend) => {
-            // console.log(`Here is friend ID ${clientID}`)
-            if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
-                if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
-                else {
-                    friend.save((err,done) => {
-                        if (err) console.log(err)
-                        else console.log({message:"Friend updated successfully!",data:{done}})
-                    })
+getEmails
+    // Creat new friends data if email is unique
+    .then(res => {
+        var uniqueEmails = [];
+        res.forEach(element => {
+            uniqueEmails.push(element.email);
+        })
+        
+        friendsArray.forEach(element => {
+
+            if (!uniqueEmails.includes(element.email)) {
+                uniqueEmails.push(element.email);
+                Friend.create(element, (err,friend) => {
+                    if (err) {
+                        console.log({err})
+                    } else {
+                        console.log({message:"Friend created successfully!",data:{friend}})
+                    };
+                })
+            } else {
+                console.log({message:"Unique email constraint violated!"})
+            }
+        });
+    })
+    .then(async () => {
+        // Get a data created
+        await sleep(2000);
+        Friend.find({name:"Glow"},(err,friends) => {
+            if (err) console.log({message:"Find operation failed!",data:{err}})
+            else {
+                console.log({message:"Find operation successful!",data:`${JSON.stringify(friends)}`}
+                )
+            }
+        
+        })
+        
+        // Update a data created
+        await sleep(2000);
+        Friend
+            .findOneAndUpdate({name:"Apiah"}, {name:'Xyluz Apiah',country:"Ghana"},{new: true},
+                    (err,friend) => {
+                    if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
+                        if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
+                        else {
+                            friend.save((err,done) => {
+                                if (err) console.log(err)
+                                else console.log({message:"Friend updated successfully!",data:{done}})
+                            })
+                        }
                 }
-        }
-
-)
-
-// Delete the data created
-Friend.deleteOne({name:'Mike'},(err,friend) => {
-    if (err) console.log({message:'An error occured!',data:{err}})
-    if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
-    else console.log({message:'Friend deleted successfully!',data:{friend}})
-}
-)
+        
+        )
+        
+        // Delete a data created
+        await sleep(2000);
+        Friend.deleteOne({name:'Ramos'},(err,friend) => {
+            if (err) console.log({message:'An error occured!',data:{err}})
+            if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
+            else console.log({message:'Friend deleted successfully!',data:{friend}})
+        })
+    })
+    .catch(err => console.log(err))
 
 // Create four routes;
 
-// fetch all friends in the database
+// fetch one/all friends in the database
 app.get('/', (req,res) => {
     Friend.find(req.body, (err,friends) => {
         console.log(`GET request input:\n${JSON.stringify(req.body)}`);
@@ -166,7 +183,6 @@ app.put('/', (req,res) => {
                             return res.status(200).json({message:'Friend updated successfully!',data:{done}})}
                     })
                 }
-                // return res.json(friend);
             }
 
         )   
@@ -186,6 +202,10 @@ app.delete('/', (req,res) => {
         };
     })
 })
+
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`App connected and running on port ${port}`))

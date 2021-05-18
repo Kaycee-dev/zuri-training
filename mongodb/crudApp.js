@@ -67,10 +67,10 @@ var getEmails = Friend.find({},async (err,friends) => {
 
 }).lean().exec();
 
+var uniqueEmails = [];
 getEmails
     // Creat new friends data if email is unique
     .then(res => {
-        var uniqueEmails = [];
         res.forEach(element => {
             uniqueEmails.push(element.email);
         })
@@ -160,8 +160,8 @@ app.post('/', (req,res) => {
         })
     }
     else {
-        console.log({message:"Email address already in use!",data:`${JSON.stringify(req.body)}`});
-        return res.status(400).json({message:"Email address already in use!",data:req.body});
+        console.log({message:`Ceate new friend failed. Email '${req.body.email}' already registered for another user!`,data:`${JSON.stringify(req.body)}`});
+        return res.status(400).json({message:`Ceate new friend failed. Email '${req.body.email}' already registered for another user!`,data:req.body});
     }
 })
 
@@ -198,6 +198,7 @@ app.delete('/', (req,res) => {
             return res.status(500).json({message:'Friend to delete does not exist!',data:{friend}})}
         else  {
             console.log({message:'Friend deleted successfully!',data:`${JSON.stringify(friend)}`})
+            // status code 204 does not display returned message
             return res.status(200).json({message:'Friend deleted successfully!',data:{friend}})
         };
     })

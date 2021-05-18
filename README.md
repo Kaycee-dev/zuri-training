@@ -76,9 +76,9 @@ Heroku hosted link https://crud-application-with-database.herokuapp.com/
 * Example JSON API request for PUT
 {
     "find":{
-        "name": "Mike",
-        "email": "mike@gmail.com",
-        "country": "Nigeria"
+        "name": "Takwe",
+        "email": "t4takwel01@gmail.com",
+        "country": "Tanzania"
     },
     "update":{
         "name": "Michael",

@@ -93,7 +93,7 @@ getEmails
     })
     .then(async () => {
         // Get a data created
-        await sleep(2000);
+        await sleep(1000);
         Friend.find({name:"Glow"},(err,friends) => {
             if (err) console.log({message:"Find operation failed!",data:{err}})
             else {
@@ -104,9 +104,9 @@ getEmails
         })
         
         // Update a data created
-        await sleep(2000);
+        await sleep(1000);
         Friend
-            .findOneAndUpdate({name:"Apiah"}, {name:'Xyluz Apiah',country:"Ghana"},{new: true},
+            .findOneAndUpdate({"email": "apiah@gmail.com"}, {name:'Xyluz Apiah',country:"Ghana"},{new: true},
                     (err,friend) => {
                     if (err) console.log({message:'An error occured during findOneAndUpdate!',data:{err}})
                         if (!friend) console.log({message:'Friend to update does not exist!',data:{friend}})
@@ -121,11 +121,15 @@ getEmails
         )
         
         // Delete a data created
-        await sleep(2000);
+        await sleep(1000);
         Friend.deleteOne({name:'Ramos'},(err,friend) => {
             if (err) console.log({message:'An error occured!',data:{err}})
             if (!friend || friend.deletedCount == 0) console.log({message:'Friend to delete does not exist!',data:{friend}})
-            else console.log({message:'Friend deleted successfully!',data:{friend}})
+            else {
+                uniqueEmails = uniqueEmails.filter(email => {
+                    return email !== "ramosgusto@gmail.com"
+                });
+                console.log({message:'Friend deleted successfully!',data:{friend}})}
         })
     })
     .catch(err => console.log(err))
@@ -148,6 +152,7 @@ app.get('/', (req,res) => {
 // add a new friend to the database
 app.post('/', (req,res) => {
     console.log(`POST request input:\n${JSON.stringify(req.body)}`);
+    // confirm email is unique
     if (!uniqueEmails.includes(req.body.email)) {
         uniqueEmails.push(req.body.email);
         Friend.create(req.body, (err,friend) => {
@@ -174,14 +179,30 @@ app.put('/', (req,res) => {
                 if (err) return res.status(500).json({message:'An error occured!',data:{err}})
                 if (!friend) return res.status(200).json({message:'Friend to update does not exist!',data:{friend}})
                 else {
-                    friend.save((err,done) => {
-                        if (err) {
-                            console.log(JSON.stringify({message:'An error occured while trying to save updated friend data!',data:{err}}))
-                            return res.status(500).json({message:'An error occured while trying to save updated friend data!',data:{err}})}
-                        else {
-                            console.log(JSON.stringify({message:'Friend updated successfully!',data:{done}}))
-                            return res.status(200).json({message:'Friend updated successfully!',data:{done}})}
-                    })
+                    // confirm email in update details is unique
+                    let requestfindEmail = req.body.find.email !== undefined || req.body.find.email !== null ? req.body.find.email: "noEmailDetails",
+                    requestUpdateEmail = req.body.update.email !== undefined || req.body.update.email !== null ? req.body.update.email: "noEmailDetails";
+                    if ((!uniqueEmails.includes(requestUpdateEmail)) && JSON.stringify(req.body.find) !== JSON.stringify(req.body.update)) {
+                        
+                        friend.save((err,done) => {
+                            if (err) {
+                                console.log(JSON.stringify({message:'An error occured while trying to save updated friend data!',data:{err}}))
+                                return res.status(500).json({message:'An error occured while trying to save updated friend data!',data:{err}})}
+                            else {
+                                uniqueEmails.push(requestUpdateEmail);
+                                uniqueEmails = uniqueEmails.filter(email => {
+                                    return email !== requestfindEmail || email !== "noEmailDetails"
+                                });
+                                console.log(JSON.stringify({message:'Friend updated successfully!',data:{done}}))
+                                return res.status(200).json({message:'Friend updated successfully!',data:{done}})}
+                        })
+                    }
+                    else {
+                        // console.log({message:`Update friend failed. Email '${req.body.update.email}' already registered for another user!`,data:`${JSON.stringify(req.body.update)}`});
+                        // return res.status(400).json({message:`Update friend failed. Email '${req.body.update.email}' already registered for another user!`,data:req.body.update});
+                        console.log({message:`Update friend failed.`,data:`${JSON.stringify(req.body.update)}`});
+                        return res.status(400).json({message:`Update friend failed`,data:req.body.update});
+                    }
                 }
             }
 
@@ -191,18 +212,41 @@ app.put('/', (req,res) => {
 // delete an existing friend
 app.delete('/', (req,res) => {
     console.log(`DELETE request input:\n${JSON.stringify(req.body)}`);
-    Friend.deleteOne(req.body,(err,friend) => {
-        if (err) return res.status(500).json({message:'An error occured!',data:{err}})
-        if (!friend || friend.deletedCount == 0) {
-            console.log({message:'Friend to delete does not exist!',data:`${JSON.stringify(friend)}`})
-            return res.status(500).json({message:'Friend to delete does not exist!',data:{friend}})}
-        else  {
-            console.log({message:'Friend deleted successfully!',data:`${JSON.stringify(friend)}`})
-            // status code 204 does not display returned message
-            return res.status(200).json({message:'Friend deleted successfully!',data:{friend}})
-        };
+    var emailToDelete = "";
+    // get email of friend to delete stored in db
+    getEmails = Friend.find(req.body,async (err,friends) => {
+        if (err) console.log({message:"Find operation failed!",data:{err}})
+        else  return await friends;
+    
+    }).lean().exec();
+    // delete email from uniqueEmails
+    getEmails.then(res => {
+        uniqueEmails = uniqueEmails.filter(emails => {
+            return emails !== res[0].email
+        });
+        emailToDelete = res[0].email;
+        }
+    ).then(() => {
+        // finally, delete the friend from db
+        Friend.deleteOne(req.body,(err,friend) => {
+            if (err) return res.status(500).json({message:'An error occured!',data:{err}})
+            if (!friend || friend.deletedCount == 0) {
+                console.log({message:'Friend to delete does not exist!',data:`${JSON.stringify(friend)}`})
+                return res.status(500).json({message:'Friend to delete does not exist!',data:{friend}})}
+            else  {
+                console.log({message:'Friend deleted successfully!',data:`${JSON.stringify(friend)}`})
+                // status code 204 does not display returned message
+                return res.status(200).json({message:'Friend deleted successfully!',data:{friend}})
+            };
+        })
+    }).catch(err => {
+        console.log(`Error while getting to delete\n${err}`);
+        console.log(`'Friend to delete does not exist!'`);
+        if (!uniqueEmails.includes(emailToDelete)) uniqueEmails.push(emailToDelete);
+        return res.status(500).json({message:'Friend to delete does not exist!',data:null})
     })
 })
+
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
